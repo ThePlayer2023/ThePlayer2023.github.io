@@ -1,7 +1,9 @@
 ---
-layout: default
+layout: page
 title: ThePlayer2023的个人博客
-description: 记录游戏的后所挖掘的秘密
+subtitle: 记录游戏背后的秘密
+sitemap:
+  priority: 0.9
 ---
 
 <ul class="list-posts">
