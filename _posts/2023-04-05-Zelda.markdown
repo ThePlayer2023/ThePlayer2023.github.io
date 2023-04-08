@@ -1,0 +1,129 @@
+---
+layout: post
+title:  "Zelda:Breath of the Wild(Part I)"
+subtitle: "Behind the Pretty Frames Of Zelda"
+---
+
+![Zelda]({% link Game/Zelda/Image/Zelda.jpg %} "The Legend of Zelda:Breath of the Wild")
+
+___
+- [介绍](#介绍)
+- [准备](#准备)
+  - [角色足迹](#角色足迹)
+  - [地形](#地形)
+  - [环境](#环境)
+
+___
+
+## <a id="介绍"></a>介绍
+
+看到这个小标题中的<em>Behind the Pretty Frames</em>如果你非常熟悉，很高兴你也看到过<a href="https://mamoniem.com/">mamoniem</a>的文章，该博客就是受到他的<em>Behind the Pretty Frames</em>系列启发，因此也沿用了他的标题(也懒得想小标题了)。如果没有看过，推荐去看一下，本博客组织结构也一部分参考了这位大佬的分析结构，全部分析完后可能也会像那个大佬一样整合到一篇，再说吧。
+
+<font size="1">ps:页面看上去可能非常乱，因为我本人并不是计算机专业的，对网站一窍不通，都是现查的，一些需要能不能查到还两说，所以只能在我能力范围内尽量改一下这个框架<a href="https://github.com/kronik3r/daktilo">daktilo</a><del>，改出啥岔子也说不定</del>。</font>
+
+![分析的帧]({% link Game/Zelda/Image/Final.png %})
+*文章默认是使用该帧进行分析，到特殊部分（如水体等特殊部件），会给出对应的资源截图*
+
+作为塞尔达分析的第一部分，该部分主要介绍一下根据绘制流程在开始时做的准备工作，并不会进入到他们Deffer Render的Base Pass以及Lighting Pass等部分，再一个本人也不是图程这类熟悉渲染流程的人，看到很多数据可能也不能很好的分辨出来，都是基于自己贫瘠的认知，还是希望理性看待我的分析。
+
+## <a id="准备"></a>准备
+
+在帧的开始，可以看到游戏关于角色足迹，地形法线和环境CubeMap的计算更新。
+
+### <a id="角色足迹"></a>角色足迹
+
+首先会更新林克的足迹用于之后的环境交互使用
+
+![]({%link Game/Zelda/Image/Walk_N.gif%})
+
+可以看到方向场进行了更新，该纹理之后会在草地等渲染时被用到。(实际纹理差异只有尖端的部分(林克)稍微前进了一点，其他地方不同是由于Gif压缩导致的)
+
+### <a id="地形"></a>地形
+
+之后会更新地形的一些数据，使用了3个Passx4个DrawCall，每四个DrawCall绘制在同一张Buffer上(塞尔达很多Buffer可能都没有Clear操作)，12个DrawCall的输入使用三张的同样的TextureArray(均包含8个Texture)，记录了高度信息，法线信息和一张未知的属性，其中高度纹理只使用了R通道，其他纹理均使用了四通道。
+
+![]({%link Game/Zelda/Image/3x4DC.png%})
+
+输入：
+
+![]({%link Game/Zelda/Image/terrain_Mask_RGB.jpg%})
+*1024x1024高度纹理*
+![]({%link Game/Zelda/Image/terrain_N_RGB.jpg%})
+*512x512法线纹理——RGB通道*
+![]({%link Game/Zelda/Image/terrain_N_A.jpg%})
+*512x512法线纹理——A通道*
+![]({%link Game/Zelda/Image/terrain_RGB.jpg%})
+*64x64未知纹理——RGB通道*
+![]({%link Game/Zelda/Image/terrain_A.jpg%})
+*64x64未知纹理——A通道*
+
+输出：
+<div calss="row">
+    <div class="column">
+        <img src="{%link Game/Zelda/Image/Terrain_O1_0.jpg%}">
+        <em>Pass1输出1_RGB</em>
+    </div>
+    <div class="column">
+        <img src="{%link Game/Zelda/Image/Terrain_O1_0_A.jpg%}">
+        <em>Pass1输出1_A</em>
+    </div>
+    <div class="column">
+        <img src="{%link Game/Zelda/Image/Terrain_O1_1.jpg%}">
+        <em>Pass1输出2</em>
+    </div>
+</div>
+
+<div calss="row">
+    <div class="column">
+        <img src="{%link Game/Zelda/Image/Terrain_O2_0.jpg%}">
+        <em>Pass2输出1_RGB</em>
+    </div>
+    <div class="column">
+        <img src="{%link Game/Zelda/Image/Terrain_O2_0_A.jpg%}">
+        <em>Pass2输出1_A</em>
+    </div>
+    <div class="column">
+        <img src="{%link Game/Zelda/Image/Terrain_O2_1.jpg%}">
+        <em>Pass2输出2</em>
+    </div>
+</div>
+
+<div calss="row">
+    <div class="column">
+        <img src="{%link Game/Zelda/Image/Terrain_O3_0.jpg%}">
+        <em>Pass3输出1_RGB</em>
+    </div>
+    <div class="column">
+        <img src="{%link Game/Zelda/Image/Terrain_O3_0_A.jpg%}">
+        <em>Pass3输出1_A</em>
+    </div>
+    <div class="column">
+        <img src="{%link Game/Zelda/Image/Terrain_O3_1.jpg%}">
+        <em>Pass3输出2</em>
+    </div>
+</div>
+
+输出的Buffer从128到160到192尺寸递增。
+
+###  <a id="环境"></a>环境
+
+之后会绘制一个基于林克位置的CubeMap，CubeMap每个面为64x64像素大小。这个CubeMap仍然是不会Clear的，所有的绘制都会覆盖在上一帧的数据上。可能是由于RenderDoc或者模拟器的原因，这边只能看到CubeMap默认的X+面的绘制过程。
+
+确认的绘制的物体包括地形，建筑和天空(天空应该是静态的)，可能还会包括其他的东西，但能确认的是不会绘制草地，测试站在水体/大树附近发现cubemap也是不会绘制水体/普通树木(某些标志性，或者是不可互动的树木可能被归类到地形里导致了绘制，下面第一张Cubemap能在左面看到一个类似树的"大"东西)的，瀑布可能还需要测试，猜测会使用静态模型或者近似，该Pass内是不会带阴影信息的，因为在云层下cubemap里地面表现仍然是亮的，应该是简单的光照材质或者无光材质，夜晚照明也会改变。
+
+在模拟器抓出的数据中，模型绘制主要通过glDrawElementsBaseVertex和glDrawElements两个命令实现，可能任天堂使用了一个大Buffer存储顶点数据(不是很熟悉这些API)。
+每个Draw call大多控制在1000个顶点以下，600+或者200+顶点的DC居多，少数建筑会使用到4000-5000顶点，纹理也只使用了两张颜色(有的只有一张)+一张色块图。
+
+![]({% link Game/Zelda/Image/Final.png %})
+![]({%link Game/Zelda/Image/Env.png%})
+*似乎有树一样的东西存在,猜测是游戏截图内那颗大树*
+![]({%link Game/Zelda/Image/Tower.jpg%})
+![]({%link Game/Zelda/Image/Env_Tower.png%})
+*初始之塔附近*
+![]({%link Game/Zelda/Image/Night_Forest.jpg%})
+![]({%link Game/Zelda/Image/Env_Night_Forest.png%})
+*夜晚森林，能清晰看到树木不会被绘制*
+
+之后会对cubemap做降采样。
+
+至此，准备工作完成，进入BasePass的绘制。

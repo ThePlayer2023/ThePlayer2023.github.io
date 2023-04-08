@@ -421,3 +421,46 @@ td,
 th {
   padding: 0;
 }
+
+
+img + em
+{
+  display: block; 
+  text-align: center;
+  margin: 10px auto;
+}
+
+em + img
+{
+  margin: 10px auto;
+}
+
+img + img
+{
+  margin: 10px auto;
+}
+
+.column {
+  float: left;
+  width: 33.33%;
+  padding: auto;
+}
+
+/* Clearfix (clear floats) */
+.row {
+  margin: auto;
+  clear: both;
+  display: table;
+}
+
+.column img
+{
+  text-align: center;
+  margin: 10px auto;
+}
+
+.column em
+{
+  text-align: center;
+  margin: 10px auto;
+}
