@@ -38,6 +38,23 @@ ___
 
 可以看到方向场进行了更新，该纹理之后会在草地等渲染时被用到。(实际纹理差异只有尖端的部分(林克)稍微前进了一点，其他地方不同是由于Gif压缩导致的)
 
+林克在攻击/投掷武器时，该纹理也会更新，攻击/武器的路径也会被渲染在上面供交互使用
+
+![]({%link Game/Zelda/Image/Throw_N.gif%})
+
+![]({%link Game/Zelda/Image/Throw_1.jpg%})
+*扔出武器*
+
+![]({%link Game/Zelda/Image/Attack_N.gif%})
+
+![]({%link Game/Zelda/Image/Attack_1.jpg%})
+*扔出武器*
+
+![]({%link Game/Zelda/Image/Attack1_N.gif%})
+
+![]({%link Game/Zelda/Image/Attack_2.jpg%})
+*攻击（灌木和水面叶子会相应动画）*
+
 ### <a id="地形"></a>地形
 
 之后会更新地形的一些数据，使用了3个Passx4个DrawCall，每四个DrawCall绘制在同一张Buffer上(塞尔达很多Buffer可能都没有Clear操作)，12个DrawCall的输入使用三张的同样的TextureArray(均包含8个Texture)，记录了高度信息，法线信息和一张未知的属性，其中高度纹理只使用了R通道，其他纹理均使用了四通道。
