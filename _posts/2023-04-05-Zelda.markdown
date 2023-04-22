@@ -45,6 +45,9 @@ ___
 ![]({%link Game/Zelda/Image/Throw_1.jpg%})
 *扔出武器*
 
+![]({%link Game/Zelda/Image/Throw_Grass.jpg%})
+*林克附件草地绘制时使用了该交互RT*
+
 ![]({%link Game/Zelda/Image/Attack_N.gif%})
 
 ![]({%link Game/Zelda/Image/Attack_1.jpg%})
@@ -54,6 +57,9 @@ ___
 
 ![]({%link Game/Zelda/Image/Attack_2.jpg%})
 *攻击（灌木和水面叶子会相应动画）*
+
+![]({%link Game/Zelda/Image/Attack_Water_BasePass.jpg%})
+*交互RT在水面叶子的BasePass被使用，用于根据攻击计算扭曲*
 
 ### <a id="地形"></a>地形
 
@@ -124,7 +130,7 @@ ___
 
 ###  <a id="环境"></a>环境
 
-之后会绘制一个基于林克位置的CubeMap，CubeMap每个面为64x64像素大小。这个CubeMap仍然是不会Clear的，所有的绘制都会覆盖在上一帧的数据上。可能是由于RenderDoc或者模拟器的原因，这边只能看到CubeMap默认的X+面的绘制过程。
+之后会绘制一个基于林克位置的CubeMap，CubeMap每个面为64x64像素大小。这个CubeMap仍然是不会Clear的，所有的绘制都会覆盖在上一帧的数据上。可能是由于RenderDoc或者模拟器的原因，这边只能看到CubeMap默认的X+面的绘制过程。cubemap并不会一直更新，在有些帧是看不到的（一开始还以为抓出问题了）。
 
 确认的绘制的物体包括地形，建筑和天空(天空应该是静态的)，可能还会包括其他的东西，但能确认的是不会绘制草地，测试站在水体/大树附近发现cubemap也是不会绘制水体/普通树木(某些标志性，或者是不可互动的树木可能被归类到地形里导致了绘制，下面第一张Cubemap能在左面看到一个类似树的"大"东西)的，瀑布可能还需要测试，猜测会使用静态模型或者近似，该Pass内是不会带阴影信息的，因为在云层下cubemap里地面表现仍然是亮的，应该是简单的光照材质或者无光材质，夜晚照明也会改变。
 

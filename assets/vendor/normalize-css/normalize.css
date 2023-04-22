@@ -446,6 +446,19 @@ img + img
   padding: auto;
 }
 
+.column5 {
+  float: left;
+  width: 20.0%;
+  padding: auto;
+}
+
+.column5 img
+{
+  text-align: center;
+  margin-top: 0px;
+  margin-bottom: 20px;
+}
+
 /* Clearfix (clear floats) */
 .row {
   margin: auto;
