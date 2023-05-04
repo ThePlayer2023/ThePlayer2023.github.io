@@ -459,6 +459,19 @@ img + img
   margin-bottom: 20px;
 }
 
+.column10 {
+  float: left;
+  width: 10.0%;
+  padding: auto;
+}
+
+.column10 img
+{
+  text-align: center;
+  margin-top: 0px;
+  margin-bottom: 20px;
+}
+
 /* Clearfix (clear floats) */
 .row {
   margin: auto;
@@ -477,3 +490,5 @@ img + img
   text-align: center;
   margin: 10px auto;
 }
+
+
